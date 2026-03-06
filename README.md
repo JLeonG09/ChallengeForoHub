@@ -1,233 +1,77 @@
-# ForoHub API
+# ForoHub API - Challenge Alura & Oracle Next Education
 
-API REST desarrollada con **Spring Boot** como parte del challenge **ForoHub de Alura**.
-El objetivo del proyecto es construir un backend para la gestión de tópicos de un foro, implementando operaciones CRUD y persistencia en base de datos relacional.
-
----
-
-# Tecnologías utilizadas
-
-* Java 17+
-* Spring Boot 4
-* Spring Web
-* Spring Data JPA
-* Hibernate
-* Flyway Migration
-* MySQL
-* Maven
-* Lombok
-* Validation
-* Spring Security (configurado para el proyecto)
+ForoHub es una **API REST** desarrollada en Java utilizando **Spring Boot**. El objetivo es replicar el funcionamiento de un foro (como el de Alura), permitiendo gestionar tópicos, respuestas, cursos y usuarios con persistencia de datos y seguridad avanzada.
 
 ---
 
-# Base de datos
-
-Base de datos relacional:
-
-```
-{DB_NAME}
-```
-
-Motor utilizado:
-
-```
-MySQL
-```
-
-La base de datos es gestionada mediante **Flyway**, permitiendo versionar las migraciones y mantener consistencia entre entornos.
+### 🚀 Funcionalidades Principales
+* **CRUD de Tópicos:** Creación, consulta, actualización y eliminación de discusiones.
+* **Seguridad:** Autenticación y autorización mediante **Spring Security**.
+* **JWT:** Generación y validación de tokens con la librería **Auth0 JWT**.
+* **Persistencia:** Uso de **MySQL** para almacenamiento de datos.
+* **Migraciones:** Gestión de esquemas de base de datos con **Flyway**.
+* **Validaciones:** Reglas de negocio aplicadas con **Jakarta Validation**.
 
 ---
 
-# Estructura del proyecto
-
-El proyecto sigue una arquitectura basada en capas.
-
-```
-com.alurachallenges.forohub
-
-controller
-service
-repository
-model
-dto
-config
-```
-
-Descripción:
-
-* **controller** → endpoints de la API
-* **service** → lógica de negocio
-* **repository** → acceso a datos con JPA
-* **model** → entidades de la base de datos
-* **dto** → objetos de transferencia de datos
-* **config** → configuraciones del proyecto
+### 🛠️ Stack Tecnológico
+* **Java 17** (LTS)
+* **Spring Boot 3**
+* **Spring Data JPA**
+* **Spring Security**
+* **MySQL**
+* **Maven** (Gestor de dependencias)
 
 ---
 
-# Funcionalidades implementadas
+### 🔐 Seguridad y Autenticación
 
-La API permite gestionar tópicos dentro del foro.
+La API implementa un modelo de autenticación **Stateless**. Para acceder a las funcionalidades, sigue estos pasos:
 
-Operaciones disponibles:
-
-### Registrar un tópico
-
-```
-POST /topicos
-```
-
-Registra un nuevo tópico en la base de datos.
-
-Campos requeridos:
-
-```
-titulo
-mensaje
-autorId
-cursoId
-```
-
-Reglas de negocio:
-
-* Todos los campos son obligatorios
-* No se permiten tópicos duplicados
+1. **Login:** Realiza una petición `POST` al endpoint `/login` enviando usuario y contraseña.
+2. **Obtención del Token:** El servidor valida las credenciales y responde con un **JSON Web Token (JWT)**.
+3. **Peticiones Autorizadas:** En cada petición posterior (GET, POST, etc.), incluye el token en el encabezado de la siguiente manera:
+   `Authorization: Bearer <tu_token_aqui>`
 
 ---
 
-### Listar tópicos
+### 📌 Endpoints de Tópicos
 
-```
-GET /topicos
-```
-
-Devuelve todos los tópicos registrados en el sistema.
-
----
-
-### Detalle de un tópico
-
-```
-GET /topicos/{id}
-```
-
-Devuelve la información detallada de un tópico específico.
+| Método | URL | Descripción | Acceso |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/login` | Autenticación del usuario | Público |
+| `GET` | `/topicos` | Listar todos los tópicos | Protegido |
+| `POST` | `/topicos` | Crear un nuevo tópico | Protegido |
+| `GET` | `/topicos/{id}`| Detalles de un tópico específico | Protegido |
+| `PUT` | `/topicos/{id}`| Actualizar información de un tópico | Protegido |
+| `DELETE` | `/topicos/{id}`| Eliminar un tópico | Protegido |
 
 ---
 
-### Actualizar un tópico
+### 🔧 Configuración del Entorno
 
-```
-PUT /topicos/{id}
-```
+1. **Base de Datos:**
+   Crea una base de datos en MySQL llamada `foro_hub`.
+   Asegúrate de configurar tus credenciales en el archivo `src/main/resources/application.properties`:
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/foro_hub
+   spring.datasource.username=tu_usuario
+   spring.datasource.password=tu_contraseña
+   ```
 
-Permite modificar la información de un tópico existente.
+2. **JWT Secret:**
+   Define una clave secreta para la firma de los tokens:
+   ```properties
+   api.security.token.secret=tu_clave_secreta_aqui
+   ```
 
----
-
-### Eliminar un tópico
-
-```
-DELETE /topicos/{id}
-```
-
-Elimina un tópico de la base de datos.
-
----
-
-# Ejemplo de request
-
-Crear un tópico:
-
-```
-POST /topicos
-```
-
-Body JSON:
-
-```json
-{
-  "titulo": "Error con Spring Boot",
-  "mensaje": "No puedo conectar con MySQL",
-  "autorId": 1,
-  "cursoId": 1
-}
-```
+3. **Ejecución:**
+   Usa el comando Maven o tu IDE preferido:
+   ```bash
+   mvn spring-boot:run
+   ```
 
 ---
 
-# Migraciones de base de datos
-
-El proyecto utiliza **Flyway** para la gestión de migraciones.
-
-Ubicación:
-
-```
-src/main/resources/db/migration
-```
-
-Ejemplo de archivos:
-
-```
-V1__create_table_usuario.sql
-V2__create_table_perfil.sql
-V3__create_table_curso.sql
-V4__create_table_topico.sql
-V5__create_table_respuesta.sql
-```
-
----
-
-# Ejecución del proyecto
-
-Clonar el repositorio:
-
-```
-git clone https://github.com/JLeonG09/ChallengeForoHub
-```
-
-Configurar la conexión a la base de datos en:
-
-```
-application.properties
-```
-
-Ejecutar el proyecto:
-
-```
-mvn spring-boot:run
-```
-
-La API estará disponible en:
-
-```
-http://localhost:8080
-```
-
----
-
-# Pruebas de la API
-
-Las pruebas pueden realizarse utilizando herramientas como:
-
-* Postman
-* Insomnia
-* curl
-
----
-
-# Estado actual del proyecto
-
-Actualmente se encuentra implementado el **CRUD completo de tópicos**:
-
-* Registro de tópicos
-* Listado de tópicos
-* Detalle de tópicos
-* Actualización de tópicos
-* Eliminación de tópicos
-
----
-
-# Autor
-
-Desarrollado por **Josué León** como parte del challenge **ForoHub - Alura**.
+### 👤 Autor
+Desarrollado por **Josue Leon** - [JLeonG09](https://github.com/JLeonG09)
